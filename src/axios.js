@@ -1,5 +1,6 @@
 import axios from 'axios'
 axios.defaults.baseURL = '//elm.cangdu.org'
+axios.defaults.withCredentials = true
 // axios.interceptors.request.use(function (config) {
 //   // 在发送请求之前做些什么
 //   config.params = {

@@ -12,7 +12,7 @@
           <div class="head-box">
             <el-dropdown @command="handleCommand" menu-align='start' class="block">
               <!--                  <img :src="baseImgPath + adminInfo.avatar" class="avator">-->
-              <img src="../assets/logo.png" class="avator">
+              <img :src="baseImgPath + adminInfo.avatar" class="avator">
               <el-dropdown-menu slot="dropdown" :style="{background: color1}">
                 <el-dropdown-item command="home">首页</el-dropdown-item>
                 <el-dropdown-item command="signout">退出</el-dropdown-item>
@@ -97,6 +97,8 @@
 </template>
 
 <script>
+    import api from "../api";
+    import {mapActions, mapState} from 'vuex'
     export default {
         name: "layout",
         data() {
@@ -107,12 +109,13 @@
                 mainClass: 'marginNotCollapse',
                 color1: '#ffffff',
                 screenWidth: window.innerWidth || document.body.clientWidth || document.documentElement.clientWidth,
-                logoSize: '28px'
+                logoSize: '28px',
+                baseImgPath: '//elm.cangdu.org/img/'
             };
         },
         mounted (){
             const that = this
-
+            this.getAdminData()
             this.changeSize()
             window.addEventListener('resize', () => {
                 return (() => {
@@ -122,23 +125,27 @@
                 })()
             })
         },
+        computed: {
+        ...mapState(['adminInfo'])
+        },
         methods: {
+            ...mapActions(['getAdminData']),
             handleOpen(key, keyPath) {
                 console.log(key, keyPath);
             },
             handleClose(key, keyPath) {
                 console.log(key, keyPath);
             },
-            changeSize (){
-                if(this.screenWidth < 768){
+            changeSize() {
+                if (this.screenWidth < 768) {
                     this.logoSize = '16px'
-                }else {
+                } else {
                     this.logoSize = '28px'
                 }
             },
             //缩放侧边栏
             changeCollapse() {
-                if (this.isCollapse){
+                if (this.isCollapse) {
                     this.isCollapse = false
                     this.collapseText = '收起菜单'
                     this.isCollapseIcon = 'el-icon-arrow-left'
@@ -150,8 +157,24 @@
                     this.mainClass = 'marginCollapse'
                 }
             },
-            handleCommand () {
-
+            async handleCommand (command) {
+                if(command == 'home'){
+                    this.$router.push('/layout/index')
+                }else if(command == 'signout') {
+                    const res = await api.signout()
+                    if (res.data.status == 1) {
+                        this.$message({
+                            type: 'success',
+                            message: '退出成功'
+                        });
+                        this.$router.push('/');
+                    }else{
+                        this.$message({
+                            type: 'error',
+                            message: res.data.message
+                        });
+                    }
+                }
             }
         }
     }
@@ -161,6 +184,9 @@
   .el-header{
     border-bottom: solid 1px #e6e6e6;
     line-height: 60px;
+    position: fixed;
+    z-index: 99;
+    width: 100%;
   }
   .logo{
     font-size: 28px;
@@ -191,6 +217,7 @@
   }
   .el-aside{
     position: fixed;
+    top: 60px;
     height: 100%;
     border-right: solid 1px #e6e6e6;
     color: #303133;
@@ -228,6 +255,9 @@
   .el-menu-vertical-demo:not(.el-menu--collapse) {
     width: 200px;
     min-height: 400px;
+  }
+  .el-main{
+    margin-top: 60px;
   }
   .marginCollapse{
     margin-left: 65px;

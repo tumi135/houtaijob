@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+const login = () => import('../page/login')
 const layout = () => import('../components/layout')
 const index = () => import('../page/index')
 const userList = () => import('../page/userList')
@@ -18,6 +19,15 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/',
+      redirect: '/login'
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: login
+    },
     {
       path: '/layout',
       name: 'layout',

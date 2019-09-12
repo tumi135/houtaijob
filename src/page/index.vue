@@ -16,6 +16,7 @@
       </el-row>
     </section>
     <index-echarts :sevenDate='sevenDate' :sevenDay='sevenDay'/>
+    <my-loading :is-loading="loading"/>
   </div>
 </template>
 
@@ -23,7 +24,8 @@
   import dtime from 'time-formater'
   import api from '../api'
   import indexEcharts from "../components/indexEcharts";
-    export default {
+  import myLoading from "../components/loading";
+  export default {
         name: "index",
         data(){
             return {
@@ -35,12 +37,15 @@
                 allAdminCount: null,
                 sevenDay: [],
                 sevenDate: [[],[],[]],
+                loading: false
             }
         },
         components: {
-            indexEcharts
+            indexEcharts,
+            myLoading
         },
         created() {
+            this.loading = true
             this.init()
             for (let i = 6; i > -1; i--) {
                 const date = dtime(new Date().getTime() - 86400000*i).format('YYYY-MM-DD')
@@ -80,6 +85,10 @@
                 }).catch(err => {
                     console.log(err)
                 })
+                var that = this
+                setTimeout(() => {
+                    this.loading = false
+                },300)
             }
 
         }
@@ -96,6 +105,10 @@
   .data_section {
     padding: 20px;
     margin-bottom: 40px;
+  }
+  .data_section .el-row{
+    display: flex;
+    justify-content: center;
   }
   .section_title{
     text-align: center;
@@ -130,4 +143,5 @@
     font-size: 16px;
     color: #333;
   }
+
 </style>
